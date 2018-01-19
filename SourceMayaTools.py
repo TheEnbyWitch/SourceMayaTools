@@ -214,7 +214,6 @@ def WriteJointData(f, jointC):
     jointNode = jointC[1]
     # Get the joint's transform
     path = OpenMaya.MDagPath() 
-    ParentPath = OpenMaya.MDagPath() 
     jointNode.getPath(path)
     transform = OpenMaya.MFnTransform(path)
     
@@ -519,10 +518,7 @@ def ExportSMDModel(filePath):
             name = name[len(name)-1].split(":") # Remove namespace prefixes
             name = name[len(name)-1]
             f.write("%i  " % (i))
-            if(joint[0] != -1):
-                WriteJointData(f, joint)
-            else:
-                WriteJointData(f, joint)
+            WriteJointData(f, joint)
     f.write("end\n")
 
     f.write("triangles\n")
@@ -608,10 +604,7 @@ def ExportSMDAnim(filePath):
                 name = name[len(name)-1].split(":") # Remove namespace prefixes
                 name = name[len(name)-1]
                 f.write("%i  " % (i))
-                if(joint[0] != -1):
-                    WriteJointData(f, joint)
-                else: 
-                    WriteJointData(f, joint)
+                WriteJointData(f, joint)
     f.write("end\n")
 
     f.close()

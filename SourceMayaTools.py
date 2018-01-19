@@ -64,6 +64,43 @@ OBJECT_NAMES =  {'menu'  :      ["SourceMayaToolsMenu",            "Source Engin
 
 # UTILITY FUNCTIONS FOR EXPORT
 
+# Thanks to SETools
+def __math_matrixtoquat__(maya_matrix):
+    """Converts a Maya matrix array to a quaternion"""
+    quat_x, quat_y, quat_z, quat_w = (0, 0, 0, 1)
+
+    trans_remain = maya_matrix[0] + maya_matrix[5] + maya_matrix[10]
+    if trans_remain > 0:
+        divisor = math.sqrt(trans_remain + 1.0) * 2.0
+        quat_w = 0.25 * divisor
+        quat_x = (maya_matrix[6] - maya_matrix[9]) / divisor
+        quat_y = (maya_matrix[8] - maya_matrix[2]) / divisor
+        quat_z = (maya_matrix[1] - maya_matrix[4]) / divisor
+    elif (maya_matrix[0] > maya_matrix[5]) and (maya_matrix[0] > maya_matrix[10]):
+        divisor = math.sqrt(
+            1.0 + maya_matrix[0] - maya_matrix[5] - maya_matrix[10]) * 2.0
+        quat_w = (maya_matrix[6] - maya_matrix[9]) / divisor
+        quat_x = 0.25 * divisor
+        quat_y = (maya_matrix[4] + maya_matrix[1]) / divisor
+        quat_z = (maya_matrix[8] + maya_matrix[2]) / divisor
+    elif maya_matrix[5] > maya_matrix[10]:
+        divisor = math.sqrt(
+            1.0 + maya_matrix[5] - maya_matrix[0] - maya_matrix[10]) * 2.0
+        quat_w = (maya_matrix[8] - maya_matrix[2]) / divisor
+        quat_x = (maya_matrix[4] + maya_matrix[1]) / divisor
+        quat_y = 0.25 * divisor
+        quat_z = (maya_matrix[9] + maya_matrix[6]) / divisor
+    else:
+        divisor = math.sqrt(
+            1.0 + maya_matrix[10] - maya_matrix[0] - maya_matrix[5]) * 2.0
+        quat_w = (maya_matrix[1] - maya_matrix[4]) / divisor
+        quat_x = (maya_matrix[8] + maya_matrix[2]) / divisor
+        quat_y = (maya_matrix[9] + maya_matrix[6]) / divisor
+        quat_z = 0.25 * divisor
+
+    # Return the result
+    return OpenMaya.MQuaternion(quat_x, quat_y, quat_z, quat_w)
+
 def GetJointList():
     joints = []
     
@@ -173,15 +210,16 @@ def GetMaterialsFromMesh(mesh, dagPath):
     return texturesToFaces
 
     
-def WriteJointData(f, jointNode):
+def WriteJointData(f, jointC):
+    jointNode = jointC[1]
     # Get the joint's transform
     path = OpenMaya.MDagPath() 
+    ParentPath = OpenMaya.MDagPath() 
     jointNode.getPath(path)
     transform = OpenMaya.MFnTransform(path)
     
-    
     # Get joint position
-    pos = transform.getTranslation(OpenMaya.MSpace.kWorld)
+    pos = transform.getTranslation(OpenMaya.MSpace.kTransform)
     
     # Get scale (almost always 1)
     scaleUtil = OpenMaya.MScriptUtil()
@@ -191,14 +229,14 @@ def WriteJointData(f, jointNode):
     scale = [OpenMaya.MScriptUtil.getDoubleArrayItem(scalePtr, 0), OpenMaya.MScriptUtil.getDoubleArrayItem(scalePtr, 1), OpenMaya.MScriptUtil.getDoubleArrayItem(scalePtr, 2)]
     
     # Get rotation matrix (mat is a 4x4, but the last row and column arn't needed)
-    rotQuaternion = OpenMaya.MQuaternion()  
-    transform.getRotation(rotQuaternion, OpenMaya.MSpace.kObject)
+    jointRotQuat = __math_matrixtoquat__(cmds.getAttr(path.fullPathName()+".matrix"))
 
-    eulerRotation = rotQuaternion.asEulerRotation()
+    eulerRotation = jointRotQuat.asEulerRotation()
 
-    # Instead of writing it return it to Export function.
     joint_offset = (pos.x*CM_TO_INCH, pos.y*CM_TO_INCH, pos.z*CM_TO_INCH)
-    joint_rotation = (eulerRotation[0],eulerRotation[0],eulerRotation[0])
+
+    joint_rotation = (eulerRotation.x,eulerRotation.y,eulerRotation.z)
+
     joint_scale = (scale[0], scale[1], scale[2])
 
     f.write("%f %f %f  %f %f %f\n" % (joint_offset[0], joint_offset[1], joint_offset[2], joint_rotation[0], joint_rotation[1], joint_rotation[2]))
@@ -481,7 +519,10 @@ def ExportSMDModel(filePath):
             name = name[len(name)-1].split(":") # Remove namespace prefixes
             name = name[len(name)-1]
             f.write("%i  " % (i))
-            WriteJointData(f, joint[1])
+            if(joint[0] != -1):
+                WriteJointData(f, joint)
+            else:
+                WriteJointData(f, joint)
     f.write("end\n")
 
     f.write("triangles\n")
@@ -567,7 +608,10 @@ def ExportSMDAnim(filePath):
                 name = name[len(name)-1].split(":") # Remove namespace prefixes
                 name = name[len(name)-1]
                 f.write("%i  " % (i))
-                WriteJointData(f, joint[1])
+                if(joint[0] != -1):
+                    WriteJointData(f, joint)
+                else: 
+                    WriteJointData(f, joint)
     f.write("end\n")
 
     f.close()

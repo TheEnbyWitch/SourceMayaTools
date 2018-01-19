@@ -1249,19 +1249,19 @@ def CreateMenu():
     menu = cmds.menu(OBJECT_NAMES['menu'][0], label=OBJECT_NAMES['menu'][1], tearOff=True)
 
     # Export tools
-    cmds.menuItem(label=OBJECT_NAMES['smdmodel'][1]+"...", command="SourceMayaTools.ShowWindow('smdmodel')")
-    cmds.menuItem(label=OBJECT_NAMES['smdanim'][1]+"...", command="SourceMayaTools.ShowWindow('smdanim')")
-    cmds.menuItem(label="Export All", command="SourceMayaTools.ExportAll()")
+    cmds.menuItem(label=OBJECT_NAMES['smdmodel'][1]+"...", command=lambda x:ShowWindow('smdmodel'))
+    cmds.menuItem(label=OBJECT_NAMES['smdanim'][1]+"...", command=lambda x:ShowWindow('smdanim'))
+    cmds.menuItem(label="Export All", command=lambda x:ExportAll())
 
     # Root folder
     cmds.menuItem(divider=True)
-    cmds.menuItem(label="Set Model Source Folder", command="SourceMayaTools.SetRootFolder(None, 'modelsrc')")
+    cmds.menuItem(label="Set Model Source Folder", command=lambda x:SetRootFolder(None))
 
     # For easy script updating
     cmds.menuItem(label="Reload Script", command="reload(SourceMayaTools)")
 
     # Tools Info
-    cmds.menuItem(label="About", command="SourceMayaTools.AboutWindow()")
+    cmds.menuItem(label="About", command=lambda x:AboutWindow())
 
 CreateMenu()
 CreateSMDModelWindow()

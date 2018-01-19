@@ -14,4 +14,5 @@ Based on [CoDMayaTools](https://github.com/Ray1235/CoDMayaTools)
  
 # Credits
  - Maciej Ray Marcin (Ray1235): Main Developer
+ - DTZxPorter: Matrix to Quaternion code from [SETools](https://github.com/dtzxporter/SETools/)
  - Aidan Shafran, Scobalula & Ray1235: CoDMayaTools Developers

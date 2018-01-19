@@ -530,7 +530,7 @@ def ExportSMDModel(filePath):
             f.write("0 %f %f %f %f %f %f %f %f " % (
                 verts[face[2][i]][0].x*CM_TO_INCH, verts[face[2][i]][0].y*CM_TO_INCH, verts[face[2][i]][0].z*CM_TO_INCH,
                 face[5][i].x, face[5][i].y, face[5][i].z,
-                face[3][i][0], face[3][i][1]
+                face[3][i][0], 1-face[3][i][1]
                 ))
             f.write(" %i " % max(len(verts[face[2][i]][1]), 1))
             if len(verts[face[2][i]][1]) > 0:

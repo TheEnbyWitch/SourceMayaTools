@@ -461,7 +461,11 @@ def GetShapes(joints):
 # EXPORT
 
 def ExportSMDModel(filePath):
-    # Progress bar
+    currentunit_state = cmds.currentUnit(query=True, linear=True)
+    currentangle_state = cmds.currentUnit(query=True, angle=True)
+    cmds.autoKeyframe(state=False)
+    cmds.currentUnit(linear="cm", angle="deg")
+
     numSelectedObjects = len(cmds.ls(selection=True))
     if numSelectedObjects == 0:
         return "Error: No objects selected for export"
@@ -543,8 +547,14 @@ def ExportSMDModel(filePath):
 
     f.close()
 
+    cmds.currentUnit(linear=currentunit_state, angle=currentangle_state)
+
 def ExportSMDAnim(filePath):
-    # Progress bar
+    currentunit_state = cmds.currentUnit(query=True, linear=True)
+    currentangle_state = cmds.currentUnit(query=True, angle=True)
+    cmds.autoKeyframe(state=False)
+    cmds.currentUnit(linear="cm", angle="deg")
+
     numSelectedObjects = len(cmds.ls(selection=True))
     if numSelectedObjects == 0:
         return "Error: No objects selected for export"
@@ -608,6 +618,8 @@ def ExportSMDAnim(filePath):
     f.write("end\n")
 
     f.close()
+
+    cmds.currentUnit(linear=currentunit_state, angle=currentangle_state)
 
 def GetRootFolder(firstTimePrompt=False, category="none"):
     SrcRootPath = ""

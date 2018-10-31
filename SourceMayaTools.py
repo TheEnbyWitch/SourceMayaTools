@@ -177,7 +177,7 @@ def GetMaterialsFromMesh(mesh, dagPath):
             shaderNode = OpenMaya.MFnDependencyNode(shaders[i])
             shaderPlug = shaderNode.findPlug("surfaceShader")
             material = OpenMaya.MPlugArray()
-            shaderPlug.connectedTo(material, 1, 0);
+            shaderPlug.connectedTo(material, 1, 0)
             
             for j in range(material.length()):
                     materialNode = OpenMaya.MFnDependencyNode(material[j].node())
@@ -227,7 +227,9 @@ def WriteJointData(f, jointC):
     scaleUtil.createFromList([1,1,1], 3)
     scalePtr = scaleUtil.asDoublePtr()
     transform.getScale(scalePtr)
-    scale = [OpenMaya.MScriptUtil.getDoubleArrayItem(scalePtr, 0), OpenMaya.MScriptUtil.getDoubleArrayItem(scalePtr, 1), OpenMaya.MScriptUtil.getDoubleArrayItem(scalePtr, 2)]
+    
+    # TODO: Scale support
+    # scale = [OpenMaya.MScriptUtil.getDoubleArrayItem(scalePtr, 0), OpenMaya.MScriptUtil.getDoubleArrayItem(scalePtr, 1), OpenMaya.MScriptUtil.getDoubleArrayItem(scalePtr, 2)]
     
     # Get rotation matrix (mat is a 4x4, but the last row and column arn't needed)
     jointRotQuat = __math_matrixtoquat__(cmds.getAttr(path.fullPathName()+".matrix"))
@@ -238,7 +240,8 @@ def WriteJointData(f, jointC):
 
     joint_rotation = (eulerRotation.x,eulerRotation.y,eulerRotation.z)
 
-    joint_scale = (scale[0], scale[1], scale[2])
+    # TODO: Decide how to handle joint scaling
+    # joint_scale = (scale[0], scale[1], scale[2])
 
     f.write("%f %f %f  %f %f %f\n" % (joint_offset[0], joint_offset[1], joint_offset[2], joint_rotation[0], joint_rotation[1], joint_rotation[2]))
 
@@ -376,7 +379,6 @@ def GetShapes(joints):
         
         # Loop through all faces
         polyIter = OpenMaya.MItMeshPolygon(dagPath)
-        currentObjectVertexOffset = 0
         while not polyIter.isDone():
             # Get this poly's material
             polyMaterial = meshMaterials[polyIter.index()]
@@ -491,8 +493,8 @@ def ExportSMDModel(filePath):
         
         # Create file
         f = open(filePath, 'w')
-    except (IOError, OSError) as e:
-        typex, value, traceback = sys.exc_info()
+    except (IOError, OSError):
+        _, value, _ = sys.exc_info()
         return "Unable to create file:\n\n%s" % value.strerror
 
     # Write header
@@ -530,7 +532,7 @@ def ExportSMDModel(filePath):
     f.write("triangles\n")
     verts = shapes["verts"]
     materials = shapes["materials"]
-    for j, face in enumerate(shapes["faces"]):
+    for face in shapes["faces"]:
         f.write("%s\n" % (materials[face[1]][0].split(":")[-1]))
         for i in range(0, 3):
             f.write("0 %f %f %f %f %f %f %f %f " % (
@@ -581,8 +583,8 @@ def ExportSMDAnim(filePath):
         
         # Create file
         f = open(filePath, 'w')
-    except (IOError, OSError) as e:
-        typex, value, traceback = sys.exc_info()
+    except (IOError, OSError):
+        _, value, _ = sys.exc_info()
         return "Unable to create file:\n\n%s" % value.strerror
 
     # Write header
@@ -1224,6 +1226,7 @@ def GeneralWindow_ExportSelected(windowID, exportingMultiple):
     try:
         exec("response = %s(\"%s\")" % (OBJECT_NAMES[windowID][4], filePath))
     except Exception as e:
+        _, _, traceback = sys.exc_info()
         response = "An unhandled error occurred during export:\n\n" + traceback.format_exc()
     
     # Delete progress bar

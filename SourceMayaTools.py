@@ -379,7 +379,6 @@ def GetShapes(joints):
         
         # Loop through all faces
         polyIter = OpenMaya.MItMeshPolygon(dagPath)
-        currentObjectVertexOffset = 0
         while not polyIter.isDone():
             # Get this poly's material
             polyMaterial = meshMaterials[polyIter.index()]

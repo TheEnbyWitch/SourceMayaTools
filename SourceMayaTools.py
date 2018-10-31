@@ -533,7 +533,7 @@ def ExportSMDModel(filePath):
     f.write("triangles\n")
     verts = shapes["verts"]
     materials = shapes["materials"]
-    for j, face in enumerate(shapes["faces"]):
+    for face in shapes["faces"]:
         f.write("%s\n" % (materials[face[1]][0].split(":")[-1]))
         for i in range(0, 3):
             f.write("0 %f %f %f %f %f %f %f %f " % (

@@ -493,8 +493,8 @@ def ExportSMDModel(filePath):
         
         # Create file
         f = open(filePath, 'w')
-    except (IOError, OSError) as e:
-        typex, value, traceback = sys.exc_info()
+    except (IOError, OSError):
+        _, value, _ = sys.exc_info()
         return "Unable to create file:\n\n%s" % value.strerror
 
     # Write header
@@ -583,8 +583,8 @@ def ExportSMDAnim(filePath):
         
         # Create file
         f = open(filePath, 'w')
-    except (IOError, OSError) as e:
-        typex, value, traceback = sys.exc_info()
+    except (IOError, OSError):
+        _, value, _ = sys.exc_info()
         return "Unable to create file:\n\n%s" % value.strerror
 
     # Write header
@@ -1226,6 +1226,7 @@ def GeneralWindow_ExportSelected(windowID, exportingMultiple):
     try:
         exec("response = %s(\"%s\")" % (OBJECT_NAMES[windowID][4], filePath))
     except Exception as e:
+        _, _, traceback = sys.exc_info()
         response = "An unhandled error occurred during export:\n\n" + traceback.format_exc()
     
     # Delete progress bar

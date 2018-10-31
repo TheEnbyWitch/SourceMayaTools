@@ -177,7 +177,7 @@ def GetMaterialsFromMesh(mesh, dagPath):
             shaderNode = OpenMaya.MFnDependencyNode(shaders[i])
             shaderPlug = shaderNode.findPlug("surfaceShader")
             material = OpenMaya.MPlugArray()
-            shaderPlug.connectedTo(material, 1, 0);
+            shaderPlug.connectedTo(material, 1, 0)
             
             for j in range(material.length()):
                     materialNode = OpenMaya.MFnDependencyNode(material[j].node())

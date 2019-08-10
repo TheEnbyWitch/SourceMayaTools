@@ -7,7 +7,7 @@ A plugin for Maya 2012 and newer for exporting models and animations to Source.
 Based on [CoDMayaTools](https://github.com/Ray1235/CoDMayaTools)
 
 # Features
- - Exporting to *.SMD files
+ - Exporting models and animations to *.SMD files
  
 # Requirements
  - [Autodesk Maya 2012 or newer](http://autodesk.com/maya)
@@ -20,3 +20,4 @@ Based on [CoDMayaTools](https://github.com/Ray1235/CoDMayaTools)
  - Maciej Ray Marcin (Ray1235): Main Developer
  - DTZxPorter: Matrix to Quaternion code from [SETools](https://github.com/dtzxporter/SETools/)
  - Aidan Shafran, Scobalula & Ray1235: CoDMayaTools Developers
+ - SE2Dev: Minor cleanup

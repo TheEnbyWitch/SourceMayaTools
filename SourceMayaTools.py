@@ -22,6 +22,8 @@
 # VERSION 1.1
 #   + Add an option to subtract animation data from a frame
 #   + Add a config variable to replace the first underscore in joint names with a dot
+# VERSION 1.2
+#   + Experimental scale support
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------- Customization (You can change these values!) ----------------------------------------------------------
@@ -244,7 +246,7 @@ def WriteJointData(f, jointC):
 
     joint_scale = (scale[0], scale[1], scale[2])
 
-    f.write("%f %f %f  %f %f %f\n" % (joint_offset[0], joint_offset[1], joint_offset[2], joint_rotation[0], joint_rotation[1], joint_rotation[2]))
+    f.write("%f %f %f  %f %f %f\n" % (joint_offset[0] * scale[0], joint_offset[1] * scale[1], joint_offset[2] * scale[2], joint_rotation[0], joint_rotation[1], joint_rotation[2]))
 
 def GetJointData(jointC):
     jointNode = jointC[1]
@@ -266,7 +268,7 @@ def GetJointData(jointC):
     # Get rotation matrix (mat is a 4x4, but the last row and column arn't needed)
     jointRotQuat = __math_matrixtoquat__(cmds.getAttr(path.fullPathName()+".matrix"))
 
-    joint_offset = (pos.x*CM_TO_INCH, pos.y*CM_TO_INCH, pos.z*CM_TO_INCH)
+    joint_offset = (pos.x*CM_TO_INCH * scale[0], pos.y*CM_TO_INCH * scale[1], pos.z*CM_TO_INCH * scale[2])
 
     return ( joint_offset, jointRotQuat )
 
@@ -296,7 +298,7 @@ def WriteJointDataSubstracted(f, jointC, jointData):
 
     eulerRotation = jointSubQuat.asEulerRotation()
 
-    joint_offset = (pos.x*CM_TO_INCH, pos.y*CM_TO_INCH, pos.z*CM_TO_INCH)
+    joint_offset = (pos.x*CM_TO_INCH * scale[0], pos.y*CM_TO_INCH * scale[1], pos.z*CM_TO_INCH * scale[2])
 
     joint_rotation = (eulerRotation.x,eulerRotation.y,eulerRotation.z)
 
